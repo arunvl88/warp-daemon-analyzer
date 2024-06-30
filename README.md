@@ -1,0 +1,57 @@
+
+A Cloudflare Worker that analyzes WARP log files using predefined error patterns and AI-generated insights.
+
+## Setup
+
+1. Install Wrangler CLI:
+npm install -g wrangler
+Copy
+2. Authenticate with your Cloudflare account:
+wrangler login
+Copy
+3. Create a new Cloudflare Worker project:
+wrangler init warp-log-analyzer
+cd warp-log-analyzer
+Copy
+4. Replace `src/index.js` with your WARP log analyzer code.
+
+5. Configure `wrangler.toml`:
+```toml
+name = "warp-log-analyzer"
+main = "src/index.js"
+compatibility_date = "2023-01-01"
+
+[ai]
+binding = "AI"
+
+[[kv_namespaces]]
+binding = "ERROR_PATTERNS"
+id = "your-kv-namespace-id"
+
+Create a KV namespace:
+Copywrangler kv:namespace create "ERROR_PATTERNS"
+Update wrangler.toml with the returned namespace ID.
+Add error patterns to KV:
+Copywrangler kv:key put --binding=ERROR_PATTERNS "Connection failed" "Indicates a network connectivity issue"
+wrangler kv:key put --binding=ERROR_PATTERNS "Authentication error" "Suggests invalid credentials or expired session"
+
+Deploy the Worker:
+Copywrangler deploy
+
+
+Code Overview
+The Worker script performs the following main functions:
+
+handleRequest: Routes incoming HTTP requests.
+handleFileUpload: Processes uploaded log files.
+analyzeWarpLog: Analyzes logs using known patterns and AI.
+getErrorPatterns: Retrieves error patterns from KV storage.
+getAIInsights: Generates AI-based insights using Cloudflare's AI model.
+
+The script serves an HTML interface for file uploads and displays analysis results in two sections: known issues and AI insights.
+Usage
+
+Access the Worker's URL in a web browser.
+Upload a WARP log file and optionally provide context.
+Click "Analyze" to process the log.
+View results in the "Known Issues" and "AI Insights" tabs.
