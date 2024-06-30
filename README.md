@@ -12,7 +12,6 @@ A Cloudflare Worker that analyzes WARP log files using predefined error patterns
 npm install -g wrangler
 
 ```
-Copy
 
 2. Authenticate with your Cloudflare account:
 
@@ -21,17 +20,15 @@ Copy
 wrangler login
 
 ```
-Copy
 
 3. Create a new Cloudflare Worker project:
 
 ```
 
-wrangler init warp-log-analyzer
+npm create cloudflare\@2.5.0 -- warp-log-analyzer
 cd warp-log-analyzer
 
 ```
-Copy
 
 4. Replace `src/index.js` with your WARP log analyzer code.
 
