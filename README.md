@@ -188,3 +188,8 @@ In the same directory where you have the script run the following commands:
 - Create CSV on warp architecture
 
 https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/configure-warp/route-traffic/warp-architecture/
+
+- Merge all of the CSV to one
+- Once the CSV is ready, follow the article below for fine-tuning:
+https://developers.cloudflare.com/workers-ai/fine-tunes/loras/
+
