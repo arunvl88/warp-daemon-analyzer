@@ -97,6 +97,7 @@ The script serves an HTML interface for file uploads and displays analysis resul
 ## Fine-tune the AI (@cf/mistral/mistral-7b-instruct-v0.2-lora):
 
 - scrape Cloudflare warp dev docs and output a CSV
+- Mistral expects CSV to be in this format: https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.1#instruction-format
 
 ```jsx
 import requests
