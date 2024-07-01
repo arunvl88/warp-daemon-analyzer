@@ -208,4 +208,15 @@ merged_df = merged_df.sample(frac=1).reset_index(drop=True)
 merged_df.to_csv('merged_warp_training_data.csv', index=False)
 ```
 
+AutoTrain LLM
+[1]
+In order to use this colab
 
+upload train.csv to a folder named data/
+train.csv must contain a text column
+choose a project name if you wish
+change model if you wish, you can use most of the text-generation models from Hugging Face Hub
+add huggingface information (token) if you wish to push trained model to huggingface hub
+update hyperparameters if you wish
+click Runtime > Run all or run each cell individually
+report issues / feature requests here: https://github.com/huggingface/autotrain-advanced/issues
