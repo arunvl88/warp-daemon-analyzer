@@ -189,4 +189,23 @@ In the same directory where you have the script run the following commands:
 - Merge all of the CSV to one
 - Once the CSV is ready, follow the article below for fine-tuning:
 https://developers.cloudflare.com/workers-ai/fine-tunes/loras/
+- Multiple CSV's should be merged:
+
+```
+import pandas as pd
+
+# Read both CSV files
+warp_docs_df = pd.read_csv('warp_documentation_dataset_mistral.csv')
+warp_logs_df = pd.read_csv('warp_logs_mistral.csv')
+
+# Concatenate the dataframes
+merged_df = pd.concat([warp_docs_df, warp_logs_df], ignore_index=True)
+
+# Shuffle the merged dataframe to mix the entries
+merged_df = merged_df.sample(frac=1).reset_index(drop=True)
+
+# Save the merged and shuffled data to a new CSV
+merged_df.to_csv('merged_warp_training_data.csv', index=False)
+```
+
 
