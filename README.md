@@ -177,6 +177,13 @@ if __name__ == "__main__":
     print(f"Dataset saved to {OUTPUT_FILE}")
 ```
 
+In the same directory where you have the script run the following commands:
+* `python3 -m venv venv `
+* `source venv/bin/activate`
+* `pip install requests beautifulsoup4 nltk`
+* `python3 scrape_warp_docs.py`
+
+
 - Create CSV on the Warp daemon logs
 - Create CSV on warp architecture
 
