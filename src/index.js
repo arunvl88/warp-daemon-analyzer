@@ -152,22 +152,22 @@ export default {
   ${userContext ? `User-reported issue: ${userContext}` : 'No user-reported issues.'}
   
   Provide:
-  1. List of significant issues or errors related to WARP's core functions. Explain their impact.
-  2. Analysis of how the log relates to any user-reported issues, including potential root causes.
-  3. Specific troubleshooting recommendations.
-  4. Identify any known error patterns from the provided context and their interpretations.
+  1. Analysis of how the log relates to any user-reported issues, look for lines containing 'WARN' or 'ERROR' as those lines are most likely
+  cause of the issue.
   
   Use markdown formatting for clarity.`
 	  }
 	];
   
 	try {
-	  const response = await env.AI.run('@cf/mistral/mistral-7b-instruct-v0.2-lora', {
-		messages: messages,
-		max_tokens: 1000
-	  });
-	  return response.response;
-	} catch (error) {
+    const response = await env.AI.run('@cf/mistral/mistral-7b-instruct-v0.2-lora', {
+      messages: messages,
+      raw: true, // Skip applying the default chat template
+      lora: 'warp-0815', // Your fine-tune name or ID
+      max_tokens: 2000
+    });
+    return response.response;
+  } catch (error) {
 	  console.error('Error getting AI insights:', error);
 	  return `Error getting AI insights: ${error.message}`;
 	}
