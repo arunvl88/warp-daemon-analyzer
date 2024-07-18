@@ -90,89 +90,44 @@ export default {
   }
   
   async function getAIInsights(logContent, userContext, errorPatterns, env) {
-	const trimmedLogContent = logContent.slice(0, 3000);
+    // Trim the log content to fit within a more reasonable character limit
+    const maxLogLength = 10000; // Reduced from 100000 to 10000
+    const trimmedLogContent = logContent.length > maxLogLength 
+      ? logContent.slice(0, maxLogLength) + "...[truncated]" 
+      : logContent;
   
-	const predefinedContext = `
-  WARP client functionality:
-  1. Device Control: Granular control over device access to applications.
-  2. Traffic Forwarding: Sends DNS and network traffic to Cloudflare for Zero Trust policy application.
-  3. Connections:
-	 a) Device orchestration (HTTPS): User registration, device posture, profile settings.
-	 b) DoH (HTTPS): DNS requests to Gateway for policy enforcement.
-	 c) WARP tunnel (UDP via WireGuard/MASQUE): IP packets for network/HTTP policy and private network access.
-  4. Split Tunnel: Determines traffic sent through WARP tunnel.
-  5. Local Domain Fallback: Configures DNS request handling.
-  6. DNS Handling:
-	 - Creates local DNS proxy (127.0.2.2, 127.0.2.3 for IPv4).
-	 - Configures OS to use this proxy for all DNS requests.
-	 - Forwards requests to Gateway or private DNS based on configuration.
-  7. IP Traffic Management:
-	 - Creates virtual network interface for WARP tunnel.
-	 - Modifies OS routing table for Split Tunnel rules.
-	 - Adjusts OS firewall to enforce Split Tunnel rules.
-  8. Routing: Default routes all traffic through WARP except for Split Tunnel exclude list.
+    const errorPatternsContext = Object.entries(errorPatterns).length > 0 
+      ? `Known error patterns and interpretations:\n${Object.entries(errorPatterns).map(([pattern, interpretation]) => 
+          `- ${pattern}: ${interpretation}`
+        ).join('\n')}`
+      : 'No known error patterns available.';
   
-  Key components to check in logs:
-  - DNS resolution issues
-  - Tunnel connection problems
-  - Split Tunnel configuration errors
-  - Firewall rule conflicts
-  - Device registration or posture check failures
-  - Gateway policy enforcement issues
-  
-  WARP operational stages and key log indicators:
-  - WARP is toggled on: Identified by log lines containing "INFO main_loop: warp::warp::tunnel: Initiate WARP connection protocol=Wireguard"
-  - WARP is connecting to the Cloudflare edge: Identified by log lines containing "Attempting Happy Eyeballs"
-  - WARP is creating the interface: Identified by log lines containing "Creating Network Service"
-  - WARP is adding routes: Identified by log lines containing "network_change: Routes changed"
-  - WARP is adding stub resolvers (DNS proxy): Identified by log lines "Initiate DNS connection" AND "Binding UDP and TCP sockets dns_servers=[127.0.2.2, 127.0.2.3]"
-  - WARP performs connectivity check outside the tunnel: Identified by log lines containing "engage.cloudflareclient.com"
-  - WARP performs connectivity check inside the tunnel: Identified by log lines containing "connectivity.cloudflareclient.com"
-  - WARP successfully connects: Identified by log lines "Sending IPC status update: Connected" AND "Ipc Broadcast ResponseStatus: Connected"`;
-  
-	const errorPatternsContext = Object.entries(errorPatterns).length > 0 
-	  ? `\n\nKnown error patterns and interpretations:\n${Object.entries(errorPatterns).map(([pattern, interpretation]) => 
-		  `- ${pattern}: ${interpretation}`
-		).join('\n')}`
-	  : '\n\nNo known error patterns available.';
-  
-	const combinedContext = predefinedContext + errorPatternsContext;
-  
-	const messages = [
-	  {
-		role: "system",
-		content: "You are an AI assistant specializing in WARP log analysis. Use this context:\n\n" + combinedContext
-	  },
-	  {
-		role: "user",
-		content: `Analyze this WARP log content:
+    const prompt = `Analyze this WARP log content:
   
   ${trimmedLogContent}
   
   ${userContext ? `User-reported issue: ${userContext}` : 'No user-reported issues.'}
   
-  Provide:
-  1. Analysis of how the log relates to any user-reported issues, look for lines containing 'WARN' or 'ERROR' as those lines are most likely
-  cause of the issue.
+  ${errorPatternsContext}
   
-  Use markdown formatting for clarity.`
-	  }
-	];
+  Provide a concise analysis of how the log relates to any user-reported issues. Focus on:
+  1. Lines containing 'WARN' or 'ERROR' as they are most likely the cause of issues.
+  2. Connection attempts and their outcomes.
+  3. Any notable state changes or error messages.
   
-	try {
-    const response = await env.AI.run('@cf/mistral/mistral-7b-instruct-v0.2-lora', {
-      messages: messages,
-      raw: true, // Skip applying the default chat template
-      lora: 'warp-0815', // Your fine-tune name or ID
-      max_tokens: 2000
-    });
-    return response.response;
-  } catch (error) {
-	  console.error('Error getting AI insights:', error);
-	  return `Error getting AI insights: ${error.message}`;
-	}
+  Use markdown formatting for clarity in your response.`;
+  
+    try {
+      const response = await env.AI.run('@cf/mistral/mistral-7b-instruct-v0.2-lora', {
+        prompt: prompt,
+        max_tokens: 500 // Reduced from 1000 to 500 for a more concise response
+      });
+      return response.response;
+    } catch (error) {
+      console.error('Error getting AI insights:', error);
+      return `Error getting AI insights: ${error.message}`;
+    }
   }
-  
   
   const INDEX_HTML = `
 <!DOCTYPE html>
