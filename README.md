@@ -320,9 +320,7 @@ d. Verifying the fine-tune creation:
     - `adapter_model.safetensors`: Contains the model weights.
     - `adapter_config.json`: Contains the configuration information.
     
-    ```json
-    json
-    Copy
+    ```
     {
       "alpha_pattern": {},
       "auto_mapping": null,
@@ -336,25 +334,22 @@ d. Verifying the fine-tune creation:
     }
     
     ```
+
+	- Upload fine-tune files `adapter_model.safetensors` and `adapter_config.json` to CLoudflare workers.
+    ```
+    npx wrangler ai finetune create @cf/mistral/mistral-7b-instruct-v0.2-lora warp-mistral /<folder_path>/
     
     ```
-    Copy
-    npx wrangler ai finetune create @cf/mistral/mistral-7b-instruct-v0.2-lora warp-mistral /Users/arunlingamariyappa/Documents/test
-    
+    - Get the fine-tune ID
     ```
-    
-    ```
-    Copy
-    npx wrangler ai finetune list
+    npx wrangler ai finetune list 
     
     ```
     
 2. **Running Inference**: We use Cloudflare Workers AI to run inference on our uploaded fine-tuned models. Specifically, we use it to analyze WARP logs in real-time. When a log is submitted to our application, the Cloudflare Worker calls upon our fine-tuned model to process the log data, extract insights, and generate analysis results.
 To use the fine-tuned model for inference, update the `getAIInsights` function:
     
-    ```jsx
-    javascript
-    Copy
+    ```
     try {
       const response = await env.AI.run('@cf/mistralai/mistral-7b-instruct-v0.2-lora', {
         messages: messages,
