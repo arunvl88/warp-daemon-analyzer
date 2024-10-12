@@ -220,3 +220,28 @@ add huggingface information (token) if you wish to push trained model to hugging
 update hyperparameters if you wish
 click Runtime > Run all or run each cell individually
 report issues / feature requests here: https://github.com/huggingface/autotrain-advanced/issues
+
+### Uploading the fine tuned model to Cloudflare workers
+
+```
+npx wrangler ai finetune create @cf/mistral/mistral-7b-instruct-v0.2-lora warp-mistral /Users/arunlingamariyappa/Documents/test
+```
+
+### Update your getAIInsights function to use the fine-tuned model
+
+```
+try {
+    const response = await env.AI.run('@cf/mistralai/mistral-7b-instruct-v0.2-lora', {
+      messages: messages,
+      raw: true,// skip applying the default chat template
+      lora: "your-finetune-name-or-id",// replace with your actual finetune name or ID
+      max_tokens: 1000
+    });
+    return response.response;
+  } catch (error) {
+    console.error('Error getting AI insights:', error);
+    return `Error getting AI insights: ${error.message}`;
+  }
+}
+```
+
