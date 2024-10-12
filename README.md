@@ -319,6 +319,9 @@ c. Creating a new fine-tune and uploading your adapter files:
 d. Verifying the fine-tune creation:
     - `adapter_model.safetensors`: Contains the model weights.
     - `adapter_config.json`: Contains the configuration information.
+
+    b. Editing the adapter_config.json:
+       Ensure it includes the model_type field. For the Mistral model, it should look like this:
     
     ```
     {
@@ -335,11 +338,15 @@ d. Verifying the fine-tune creation:
     
     ```
 
-	- Upload fine-tune files `adapter_model.safetensors` and `adapter_config.json` to CLoudflare workers.
-    ```
-    npx wrangler ai finetune create @cf/mistral/mistral-7b-instruct-v0.2-lora warp-mistral /<folder_path>/
+    c. Upload fine-tune files adapter_model.safetensors and adapter_config.json to Cloudflare Workers:
     
     ```
+    npx wrangler ai finetune create @cf/mistral/mistral-7b-instruct-v0.2-lora warp-mistral /<folder_path>/
+    ```
+
+    d. Get the fine-tune ID:
+    
+
     - Get the fine-tune ID
     ```
     npx wrangler ai finetune list 
