@@ -208,7 +208,7 @@ merged_df = merged_df.sample(frac=1).reset_index(drop=True)
 merged_df.to_csv('merged_warp_training_data.csv', index=False)
 ```
 
-AutoTrain LLM
+## AutoTrain LLM
 [1]
 In order to use this colab
 
@@ -221,13 +221,45 @@ update hyperparameters if you wish
 click Runtime > Run all or run each cell individually
 report issues / feature requests here: https://github.com/huggingface/autotrain-advanced/issues
 
-### Uploading the fine tuned model to Cloudflare workers
+- Prepare your LoRA adapter files:
+You need two files:
+    - `adapter_model.safetensors`: Contains the model weights.
+    - `adapter_config.json`: Contains the configuration information.
+- Edit the `adapter_config.json`:
+Make sure to include the `model_type` field. For your case, using the Mistral model, it should look like this:
+    
+    ```json
+    json
+    Copy
+    {
+      "alpha_pattern": {},
+      "auto_mapping": null,
+      ...
+      "target_modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "task_type": "CAUSAL_LM",
+      "model_type": "mistral"
+    }
+    
+    ```
+    
+- Create a new fine-tune and upload your adapter files:
+
+- Uploading the fine tuned model to Cloudflare workers
 
 ```
 npx wrangler ai finetune create @cf/mistral/mistral-7b-instruct-v0.2-lora warp-mistral /Users/arunlingamariyappa/Documents/test
 ```
 
-### Update your getAIInsights function to use the fine-tuned model
+- Verify the fine tune creation
+
+```
+npx wrangler ai finetune list
+```
+
+- Update your getAIInsights function to use the fine-tuned model
 
 ```
 try {
