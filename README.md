@@ -213,6 +213,26 @@ merged_df.to_csv('merged_warp_training_data.csv', index=False)
 
 This document outlines the process used to fine-tune the Mistral 7B model for WARP log analysis.
 
+## Key Technologies
+
+Before diving into the process, let's briefly explain the key technologies used:
+
+### AutoTrain Advanced
+
+AutoTrain Advanced is a tool developed by Hugging Face that simplifies the process of fine-tuning large language models. It automates many of the complex steps involved in model training, making it accessible to users without extensive machine learning expertise.
+
+### Google Colab
+
+Google Colab (short for Colaboratory) is a free, cloud-based platform that allows you to write and execute Python code through the browser. It's particularly useful for machine learning projects as it provides free access to GPUs, making computationally intensive tasks like model training more feasible.
+
+### Hugging Face
+
+Hugging Face is a company that provides a platform for sharing, discovering, and collaborating on machine learning models, datasets, and applications. They offer a wide range of pre-trained models and tools for natural language processing tasks.
+
+### Cloudflare Workers AI
+
+Cloudflare Workers AI is a platform that allows developers to run machine learning models at the edge of the network, close to where users are located. It enables the integration of AI capabilities into Cloudflare Workers, which are serverless functions that run on Cloudflare's global network. Cloudflare workers is where I would use the 
+
 ## Prerequisites
 
 - Google Colab account
@@ -285,28 +305,23 @@ These files will be automatically pushed to your Hugging Face repository if you 
 
 Follow the guide at [Cloudflare Workers AI LoRA Fine-tunes](https://developers.cloudflare.com/workers-ai/fine-tunes/loras/) to integrate your fine-tuned model with Cloudflare Workers AI.
 
-## Troubleshooting
+Cloudflare Workers AI is a platform that enables running machine learning models at the edge of the network, close to where users are located. It integrates AI capabilities into Cloudflare Workers, which are serverless functions running on Cloudflare's global network. In this project, we utilize Cloudflare Workers AI for two crucial steps:
 
-If you encounter any issues during the fine-tuning process, refer to:
+1. **Uploading Fine-Tuned Models**: After fine-tuning our model (based on Mistral 7B) using AutoTrain Advanced and Hugging Face, we upload the resulting fine-tuned model to Cloudflare Workers AI. This process makes our custom-trained model available for use within the Cloudflare ecosystem.
+The process involves:
+a. Preparing your LoRA adapter files:
 
-- [Autotrain Advanced Issues](https://github.com/huggingface/autotrain-advanced/issues)
-- Hugging Face community forums
+b. Editing the `adapter_config.json`:
+Ensure it includes the `model_type` field. For the Mistral model, it should look like this:
 
-## Notes
+c. Creating a new fine-tune and uploading your adapter files:
 
-- Ensure your Hugging Face token has the necessary permissions.
-- The fine-tuning process can take several hours depending on your dataset size and the GPU you're using.
-- Always monitor the Colab notebook to ensure it doesn't disconnect during the fine-tuning process.
-
-
-- Prepare your LoRA adapter files:
-You need two files:
+d. Verifying the fine-tune creation:
     - `adapter_model.safetensors`: Contains the model weights.
     - `adapter_config.json`: Contains the configuration information.
-- Edit the `adapter_config.json`:
-Make sure to include the `model_type` field. For your case, using the Mistral model, it should look like this:
     
-    ```
+    ```json
+    json
     Copy
     {
       "alpha_pattern": {},
@@ -322,37 +337,55 @@ Make sure to include the `model_type` field. For your case, using the Mistral mo
     
     ```
     
-- Create a new fine-tune and upload your adapter files:
+    ```
+    Copy
+    npx wrangler ai finetune create @cf/mistral/mistral-7b-instruct-v0.2-lora warp-mistral /Users/arunlingamariyappa/Documents/test
+    
+    ```
+    
+    ```
+    Copy
+    npx wrangler ai finetune list
+    
+    ```
+    
+2. **Running Inference**: We use Cloudflare Workers AI to run inference on our uploaded fine-tuned models. Specifically, we use it to analyze WARP logs in real-time. When a log is submitted to our application, the Cloudflare Worker calls upon our fine-tuned model to process the log data, extract insights, and generate analysis results.
+To use the fine-tuned model for inference, update the `getAIInsights` function:
+    
+    ```jsx
+    javascript
+    Copy
+    try {
+      const response = await env.AI.run('@cf/mistralai/mistral-7b-instruct-v0.2-lora', {
+        messages: messages,
+        raw: true,// skip applying the default chat template
+        lora: "your-finetune-name-or-id",// replace with your actual finetune name or ID
+        max_tokens: 1000
+      });
+      return response.response;
+    } catch (error) {
+      console.error('Error getting AI insights:', error);
+      return `Error getting AI insights: ${error.message}`;
+    }
+    
+    ```
+    
 
-- Uploading the fine tuned model to Cloudflare workers
+This setup allows us to leverage the power of edge computing for our WARP log analysis, ensuring fast response times and efficient processing of log data, regardless of the user's geographical location.
 
-```
-npx wrangler ai finetune create @cf/mistral/mistral-7b-instruct-v0.2-lora warp-mistral /Users/arunlingamariyappa/Documents/test
-```
+## Troubleshooting
 
-- Verify the fine tune creation
+If you encounter any issues during the fine-tuning process, refer to:
 
-```
-npx wrangler ai finetune list
-```
+- [Autotrain Advanced Issues](https://github.com/huggingface/autotrain-advanced/issues)
+- Hugging Face community forums
 
-- Update your getAIInsights function to use the fine-tuned model
+## Notes
 
-```
-try {
-    const response = await env.AI.run('@cf/mistralai/mistral-7b-instruct-v0.2-lora', {
-      messages: messages,
-      raw: true,// skip applying the default chat template
-      lora: "your-finetune-name-or-id",// replace with your actual finetune name or ID
-      max_tokens: 1000
-    });
-    return response.response;
-  } catch (error) {
-    console.error('Error getting AI insights:', error);
-    return `Error getting AI insights: ${error.message}`;
-  }
-}
-```
+- Ensure your Hugging Face token has the necessary permissions.
+- The fine-tuning process can take several hours depending on your dataset size and the GPU you're using.
+- Always monitor the Colab notebook to ensure it doesn't disconnect during the fine-tuning process.
+
 
 ## References
 
