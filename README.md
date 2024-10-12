@@ -228,8 +228,7 @@ You need two files:
 - Edit the `adapter_config.json`:
 Make sure to include the `model_type` field. For your case, using the Mistral model, it should look like this:
     
-    ```json
-    json
+    ```
     Copy
     {
       "alpha_pattern": {},
