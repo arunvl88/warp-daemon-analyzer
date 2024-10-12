@@ -319,7 +319,8 @@ c. Creating a new fine-tune and uploading your adapter files:
 d. Verifying the fine-tune creation:
     - `adapter_model.safetensors`: Contains the model weights.
     - `adapter_config.json`: Contains the configuration information.
-    - Editing the adapter_config.json. Ensure it includes the model_type field. For the Mistral model, it should look like this.
+	
+- Editing the adapter_config.json. Ensure it includes the model_type field. For the Mistral model, it should look like this.
 
 ```json
 {
