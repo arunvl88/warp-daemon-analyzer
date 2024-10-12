@@ -208,18 +208,101 @@ merged_df = merged_df.sample(frac=1).reset_index(drop=True)
 merged_df.to_csv('merged_warp_training_data.csv', index=False)
 ```
 
-## AutoTrain LLM
-[1]
-In order to use this colab
 
-upload train.csv to a folder named data/
-train.csv must contain a text column
-choose a project name if you wish
-change model if you wish, you can use most of the text-generation models from Hugging Face Hub
-add huggingface information (token) if you wish to push trained model to huggingface hub
-update hyperparameters if you wish
-click Runtime > Run all or run each cell individually
-report issues / feature requests here: https://github.com/huggingface/autotrain-advanced/issues
+# Fine-Tuning Process Documentation
+
+This document outlines the process used to fine-tune the Mistral 7B model for WARP log analysis.
+
+## Prerequisites
+
+- Google Colab account
+- Hugging Face account
+- `train.csv` file containing your training data
+
+## Steps
+
+### 1. Set Up Google Colab
+
+1. Open a new Google Colab notebook.
+2. Ensure you're using a GPU runtime for faster processing.
+
+### 2. Install Required Libraries
+
+Run the following commands in a Colab cell:
+
+```python
+python
+Copy
+!pip install --upgrade torch torchvision
+!pip install --upgrade autotrain-advanced
+!pip install -U autotrain-advanced
+
+```
+
+### 3. Set Up Hugging Face Token
+
+1. Go to [Hugging Face Token Settings](https://huggingface.co/settings/tokens)
+2. Create a new token with write permissions
+3. In your Colab notebook, set the environment variable:
+
+```python
+python
+Copy
+import os
+os.environ["HUGGING_FACE_HUB_TOKEN"] = "your_token_here"
+
+```
+
+Replace `your_token_here` with your actual Hugging Face token.
+
+### 4. Configure the Fine-Tuning Process
+
+Use the following configuration:
+
+- Project Name: `finetune-mistral-warp`
+- Base Model: `mistralai/mistral-7b-instruct-v0.2`
+- Push to Hub: `True`
+- HF Username: Your Hugging Face username
+
+### 5. Prepare Training Data
+
+Ensure your `train.csv` file is properly formatted and uploaded to your Colab environment.
+
+### 6. Run Fine-Tuning
+
+Execute the fine-tuning process using the autotrain-advanced library. The exact command will depend on your specific requirements and dataset.
+
+### 7. Retrieve Fine-Tuned Model
+
+After fine-tuning, you'll get two important files:
+
+- `adapter_model.safetensors`: Contains the model weights
+- `adapter_config.json`: Contains the configuration information
+
+These files will be automatically pushed to your Hugging Face repository if you set `push_to_hub` to `True`.
+
+### 8. Integrate with Cloudflare Workers AI
+
+Follow the guide at [Cloudflare Workers AI LoRA Fine-tunes](https://developers.cloudflare.com/workers-ai/fine-tunes/loras/) to integrate your fine-tuned model with Cloudflare Workers AI.
+
+## Troubleshooting
+
+If you encounter any issues during the fine-tuning process, refer to:
+
+- [Autotrain Advanced Issues](https://github.com/huggingface/autotrain-advanced/issues)
+- Hugging Face community forums
+
+## Notes
+
+- Ensure your Hugging Face token has the necessary permissions.
+- The fine-tuning process can take several hours depending on your dataset size and the GPU you're using.
+- Always monitor the Colab notebook to ensure it doesn't disconnect during the fine-tuning process.
+
+## References
+
+- [Cloudflare Workers AI LoRA Fine-tunes](https://developers.cloudflare.com/workers-ai/fine-tunes/loras/)
+- [Hugging Face Token Settings](https://huggingface.co/settings/tokens)
+- [Autotrain Advanced GitHub](https://github.com/huggingface/autotrain-advanced)
 
 - Prepare your LoRA adapter files:
 You need two files:
