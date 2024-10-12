@@ -287,7 +287,7 @@ Use the following configuration:
 ### 5. Prepare Training Data
 
 Ensure your `train.csv` file is properly formatted and uploaded to your Colab environment.
-An example: Single row of training data in train.csv
+An example: Single row of training data in train.csv. This is formatted as per mistral model required training data format.
 
 ```
 <s>[INST] Analyze the following Cloudflare WARP log entries and identify any issues or notable events:
