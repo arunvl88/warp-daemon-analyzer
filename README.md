@@ -298,11 +298,6 @@ If you encounter any issues during the fine-tuning process, refer to:
 - The fine-tuning process can take several hours depending on your dataset size and the GPU you're using.
 - Always monitor the Colab notebook to ensure it doesn't disconnect during the fine-tuning process.
 
-## References
-
-- [Cloudflare Workers AI LoRA Fine-tunes](https://developers.cloudflare.com/workers-ai/fine-tunes/loras/)
-- [Hugging Face Token Settings](https://huggingface.co/settings/tokens)
-- [Autotrain Advanced GitHub](https://github.com/huggingface/autotrain-advanced)
 
 - Prepare your LoRA adapter files:
 You need two files:
@@ -359,3 +354,9 @@ try {
 }
 ```
 
+## References
+
+- [Cloudflare Workers AI LoRA Fine-tunes](https://developers.cloudflare.com/workers-ai/fine-tunes/loras/)
+- [Hugging Face Token Settings](https://huggingface.co/settings/tokens)
+- [Autotrain Advanced GitHub](https://github.com/huggingface/autotrain-advanced)
+- [fine-tune-models-with-autotrain](https://developers.cloudflare.com/workers-ai/tutorials/fine-tune-models-with-autotrain)
