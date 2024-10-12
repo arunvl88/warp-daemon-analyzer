@@ -287,6 +287,28 @@ Use the following configuration:
 ### 5. Prepare Training Data
 
 Ensure your `train.csv` file is properly formatted and uploaded to your Colab environment.
+An example: Single row of training data in train.csv
+
+```
+<s>[INST] Analyze the following Cloudflare WARP log entries and identify any issues or notable events:
+
+2024-06-21T15:45:36.584Z  INFO main_loop: warp::warp::warp_connection: Starting Warp Connection operation_mode=WarpWithDnsOverHttps dns_mode=DNS Proxy tunnel_mode=Exclude-only Tunnel posture_only=disabled forward_proxy=disabled
+2024-06-21T15:45:36.584Z DEBUG main_loop: warp_settings::raw_settings: gateway_id=147b620fdsss6a78fds Using gateway ID
+2024-06-21T15:45:36.584Z  INFO main_loop: warp::warp::tunnel: Initiate WARP connection protocol=Wireguard [/INST]
+
+Analysis of the log entries:
+1. Event: WARP Connection is starting
+   - Operation mode: WarpWithDnsOverHttps
+   - DNS mode: DNS Proxy
+   - Tunnel mode: Exclude-only Tunnel
+   - Posture only: disabled
+   - Forward proxy: disabled
+2. Gateway ID is being used: 147b620ffddfdsf888
+3. WARP connection is being initiated using the Wireguard protocol
+
+No issues are apparent in these log entries. The logs show a normal startup sequence for a WARP connection.</s>
+```
+
 
 ### 6. Run Fine-Tuning
 
