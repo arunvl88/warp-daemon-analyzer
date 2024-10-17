@@ -90,11 +90,21 @@ export default {
   }
   
   async function getAIInsights(logContent, userContext, errorPatterns, env) {
-    // Trim the log content to fit within a more reasonable character limit
-    const maxLogLength = 10000; // Reduced from 100000 to 10000
-    const trimmedLogContent = logContent.length > maxLogLength 
-      ? logContent.slice(0, maxLogLength) + "...[truncated]" 
-      : logContent;
+    const initiateMessage = "Initiate WARP connection protocol";
+    const lastInitiateIndex = logContent.lastIndexOf(initiateMessage);
+    
+    let relevantLogContent;
+    if (lastInitiateIndex !== -1) {
+      relevantLogContent = logContent.slice(lastInitiateIndex);
+    } else {
+      // If the initiate message is not found, use the last 10000 characters
+      relevantLogContent = logContent.slice(-10000);
+    }
+  
+    // Trim to 10000 characters if it's longer
+    const trimmedLogContent = relevantLogContent.length > 10000 
+      ? relevantLogContent.slice(0, 10000) + "...[truncated]" 
+      : relevantLogContent;
   
     const errorPatternsContext = Object.entries(errorPatterns).length > 0 
       ? `Known error patterns and interpretations:\n${Object.entries(errorPatterns).map(([pattern, interpretation]) => 
@@ -102,7 +112,7 @@ export default {
         ).join('\n')}`
       : 'No known error patterns available.';
   
-    const prompt = `Analyze this WARP log content:
+    const prompt = `Analyze this WARP log content, starting from the most recent connection attempt:
   
   ${trimmedLogContent}
   
@@ -120,7 +130,7 @@ export default {
     try {
       const response = await env.AI.run('@cf/mistral/mistral-7b-instruct-v0.2-lora', {
         prompt: prompt,
-        max_tokens: 500 // Reduced from 1000 to 500 for a more concise response
+        max_tokens: 500
       });
       return response.response;
     } catch (error) {
