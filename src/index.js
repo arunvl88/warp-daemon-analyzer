@@ -130,7 +130,8 @@ export default {
     try {
       const response = await env.AI.run('@cf/mistral/mistral-7b-instruct-v0.2-lora', {
         prompt: prompt,
-        max_tokens: 500
+	lora: "e68b37f9-1ae6-4ba1-8824-251957b2419f",// replace with your actual finetune name or ID
+        max_tokens: 1000
       });
       return response.response;
     } catch (error) {
